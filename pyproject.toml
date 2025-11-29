@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ETL-Project-Walkthough"
+version = "0.1.0"
+description = "An ETL project for extracting, transforming, and loading data."
+authors = [{name = "Your Name", email = "ewright@digitalfutures.com"}]
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/de-2506-a/etl-walkthrough"
+
+[project.scripts]
+run_etl = "scripts.run_etl:main"
+run_tests = "tests.run_tests:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
