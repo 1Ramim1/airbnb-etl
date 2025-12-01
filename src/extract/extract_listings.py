@@ -12,58 +12,66 @@ TYPE = "LISTINGS from local file"
 EXPECTED_IMPORT_RATE = 0.001
 
 
-def extract_listings() -> pd.DataFrame:
+def extract_listings() -> dict[str, pd.DataFrame]:
     """
     Extract listings data from local data/raw directory,
     with performance logging (matches reference pattern).
     """
     try:
         start_time = timeit.default_timer()
-        df = extract_listings_execution()
+        dfs = extract_listings_execution()
         extract_time = timeit.default_timer() - start_time
 
         logger.info(
-            f"Extracted {df.shape[0]} rows in {extract_time:.2f}s ({TYPE})"
+            f"Extracted {len(dfs)} datasets in {extract_time:.2f}s ({TYPE})"
         )
 
-        return df
+        for name, df in dfs.items():
+            logger.info(f"Dataset '{name}' loaded with shape {df.shape}")
+
+        return dfs
 
     except Exception as e:
-        logger.error(f"Failed to extract listings: {e}")
+        logger.error(f"Failed to extract datasets: {e}")
         raise
 
 
-def extract_listings_execution() -> pd.DataFrame:
+def extract_listings_execution() -> dict[str, pd.DataFrame]:
     """
     Actual extraction logic — no settings object required.
     Everything is built internally just like in the reference.
     """
 
     # Read filename from environment variables (reference-style)
-    raw_filename = os.getenv("RAW_FILENAME", "input.csv")
+    # raw_filename = os.getenv("RAW_FILENAME", "input.csv")
 
     # Build raw folder path manually
     project_root = Path(__file__).resolve().parents[2]  # project root
     raw_dir = project_root / "data" / "raw"
 
-    file_path = raw_dir / raw_filename
+    if not raw_dir.exists():
+        raise FileNotFoundError(f"Raw folder not found: {raw_dir}")
 
-    if not file_path.exists():
-        raise FileNotFoundError(f"Missing raw file: {file_path}")
+    raw_files = list(raw_dir.iterdir())
 
-    logger.info(f"Reading local raw file: {file_path}")
+    if not raw_files:
+        raise FileNotFoundError(f"No files found in raw folder: {raw_dir}")
 
-    suffix = file_path.suffix.lower()
+    logger.info(f"Reading all CSV files inside: {raw_dir}")
 
-    if suffix == ".csv":
+    raw_dfs = {}
+
+    for file_path in raw_files:
+        if file_path.suffix.lower() != ".csv":
+            logger.warning(f"Skipping unsupported filetype: {file_path}")
+            continue
+
         df = pd.read_csv(file_path)
-    elif suffix == ".json":
-        df = pd.read_json(file_path)
-    elif suffix in (".xlsx", ".xls"):
-        df = pd.read_excel(file_path)
-    elif suffix == ".parquet":
-        df = pd.read_parquet(file_path)
-    else:
-        raise ValueError(f"Unsupported file type: {suffix}")
+        name = file_path.stem
+        raw_dfs[name] = df
+        logger.info(f"Loaded file: {file_path.name} with key '{name}'")
 
-    return df
+        if not raw_dfs:
+            raise ValueError(f"No CSV files found in the raw folder")
+
+    return raw_dfs

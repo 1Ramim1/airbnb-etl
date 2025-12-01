@@ -23,12 +23,16 @@ def main():
         logger.info("Data extraction phase completed")
 
         # proof of confirmation
-        print(f"\nExtracde data terminal preview:{extracted_data.head()}\n")
+        print(f"\nExtracted data terminal previews:")
+        for name, df in extracted_data.items():
+            print(f"\nDataset: {name}")
+            print(df.head())
 
-        logger.info(
-            f"Extraction returned {extracted_data.shape[0]} rows and "
-            f"{extracted_data.shape[1]} columns"
-        )
+        for name, df in extracted_data.items():
+            logger.info(
+                f"Dataset '{name}' Extraction returned: {df.shape[0]} rows and "
+                f"{df.shape[1]} columns"
+            )
 
         logger.info("ETL pipeline successfully completed")
 

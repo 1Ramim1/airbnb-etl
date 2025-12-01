@@ -5,7 +5,7 @@ from src.utils.logging_utils import setup_logger
 logger = setup_logger("extract_data", "extract_data.log")
 
 
-def extract_data() -> pd.DataFrame:
+def extract_data() -> dict[str, pd.DataFrame]:
     """
     Extract all datasets needed for ETL.
     For now: listings only.
@@ -17,7 +17,8 @@ def extract_data() -> pd.DataFrame:
 
         listings = extract_listings()
 
-        logger.info(f"Extraction completed - Listings: {listings.shape}")
+        for name, df in listings.items():
+            logger.info(f"Extraction dataset - '{name}': {df.shape}")
 
         return listings
 
