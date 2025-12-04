@@ -39,7 +39,7 @@ def main():
         # Transformation phase
         logger.info("Beginning data transformation phase")
         transformed_data = transform_data(
-            extracted_data['detailed_listings_data'])
+            extracted_data['dirty_detailed_listings_data'])
         # Create output directory and file
         output_dir = Path("data/processed")
         output_dir.mkdir(parents=True, exist_ok=True)

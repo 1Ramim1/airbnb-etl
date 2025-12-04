@@ -22,6 +22,7 @@ Homepage = "https://github.com/de-2506-a/etl-walkthrough"
 [project.scripts]
 run_etl = "scripts.run_etl:main"
 run_tests = "tests.run_tests:main"
+run_app = "scripts.run_app:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
