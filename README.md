@@ -41,3 +41,11 @@ There was also too many columns in this dataset. I intially spent the first 2 da
 This approach allowed me to narrow the dataset down to 27 key variables, significantly streamlining the cleaning process and ensuring that all effort went toward actionable, business-focused outcomes.
 
 I will now break down my story based on the ETL pipeline.
+
+## Unit tests:
+
+![alt text](image-4.png)
+
+## Component Tests:
+
+![alt text](image-5.png)

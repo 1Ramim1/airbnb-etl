@@ -33,3 +33,5 @@ I want to extract the Airbnb listings dataset from a CSV file, so that it is ava
 - A log entry is created for successful extraction
 
 - Unit tests verify the extraction process
+
+![alt text](image.png)

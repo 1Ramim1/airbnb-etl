@@ -109,3 +109,7 @@ So that pricing, occupancy, and competitiveness analysis can be performed.
 - Engineered fields have clear business meaning
 
 - Tests verify correct calculation
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)

@@ -42,9 +42,6 @@ def extract_listings_execution() -> dict[str, pd.DataFrame]:
     Everything is built internally just like in the reference.
     """
 
-    # Read filename from environment variables (reference-style)
-    # raw_filename = os.getenv("RAW_FILENAME", "input.csv")
-
     # Build raw folder path manually
     project_root = Path(__file__).resolve().parents[2]  # project root
     raw_dir = project_root / "data" / "raw"
