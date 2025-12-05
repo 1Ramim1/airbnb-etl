@@ -18,6 +18,7 @@ from src.transform.transform_listings import (
 class TestDropRowsWithMissingThreshold:
 
     def test_drop_rows_with_missing_threshold_drops_high_missing_rows(self):
+        # I used different missing value patterns so I could check the threshold logic clearly
         df = pd.DataFrame({
             "a": [1, None, None],
             "b": [None, None, 3],
@@ -26,7 +27,7 @@ class TestDropRowsWithMissingThreshold:
 
         result = drop_rows_with_missing_threshold(df, threshold=0.5)
 
-        # Only the first row has fewer than 50% missing
+        # I expect only the first row to remain since it has fewer missing values than the threshold
         assert len(result) == 1
         assert result.index.tolist() == [0]
 
@@ -34,6 +35,7 @@ class TestDropRowsWithMissingThreshold:
 class TestCleanAmenitiesColumn:
 
     def test_clean_amenities_column_parses_list_strings(self):
+        # I used a string version of a list so I could verify that it converts into a real list
         df = pd.DataFrame({
             "amenities": ["['Wifi','TV','Kitchen']"]
         })
@@ -42,6 +44,7 @@ class TestCleanAmenitiesColumn:
         assert result["amenities"].iloc[0] == ["Wifi", "TV", "Kitchen"]
 
     def test_clean_amenities_handles_empty_values(self):
+        # I wanted to confirm empty or missing values return an empty list
         df = pd.DataFrame({"amenities": [None]})
         result = clean_amenities_column(df)
         assert result["amenities"].iloc[0] == []
@@ -50,6 +53,7 @@ class TestCleanAmenitiesColumn:
 class TestAddPriceCompetitiveness:
 
     def test_price_competitiveness_computes_scaled_values(self):
+        # I created simple values so I could see the scaled output clearly
         df = pd.DataFrame({
             "neighbourhood_cleansed": ["A", "A"],
             "property_type": ["House", "House"],
@@ -58,10 +62,10 @@ class TestAddPriceCompetitiveness:
 
         result = add_price_competitiveness(df)
 
-        # Column exists after rename
+        # I check the renamed column so I know the feature was added
         assert "price_competitiveness (100%)" in result.columns
 
-        # Values should be floats (scaled 0–100)
+        # I expect numeric scaled values inside the new column
         vals = result["price_competitiveness (100%)"].tolist()
         assert all(isinstance(v, float) for v in vals)
 
@@ -69,6 +73,7 @@ class TestAddPriceCompetitiveness:
 class TestImputePriceColumn:
 
     def test_impute_price_column_fills_missing_prices(self):
+        # I set up a case with one missing price so I could see the median logic work
         df = pd.DataFrame({
             "neighbourhood_cleansed": ["A", "A"],
             "property_type": ["House", "House"],
@@ -78,13 +83,14 @@ class TestImputePriceColumn:
 
         result = impute_price_column(df)
 
-        # Missing value filled with median = 100
+        # After imputation, both values should match the median
         assert result["price"].tolist() == [100.0, 100.0]
 
 
 class TestFixReviewColumns:
 
     def test_fix_review_columns_sets_review_data_to_zero_for_unreviewed(self):
+        # I added a row with zero reviews so I could check the reset-to-zero logic
         df = pd.DataFrame({
             "number_of_reviews": [0, 5],
             "review_scores_rating": [4.5, 4.0],
@@ -103,6 +109,7 @@ class TestFixReviewColumns:
 class TestAddOccupancyPotential:
 
     def test_add_occupancy_potential_adds_score(self):
+        # I created simple numeric values so the scoring logic would be easy to inspect
         df = pd.DataFrame({
             "availability_365": [100, 200],
             "estimated_revenue_l365d": [10000, 20000],
@@ -114,12 +121,13 @@ class TestAddOccupancyPotential:
 
         assert "occupancy_potential" in result.columns
         assert result["occupancy_potential"].dtype == float
-        assert result["occupancy_potential"].max() <= 1.0  # normalized
+        assert result["occupancy_potential"].max() <= 1.0
 
 
 class TestImputeMinimumBeds:
 
     def test_impute_minimum_beds_uses_bedrooms_when_missing(self):
+        # I added missing bed counts so I could confirm bedrooms fill them in
         df = pd.DataFrame({
             "beds": [None, 2],
             "bedrooms": [1, 3]
@@ -133,6 +141,7 @@ class TestImputeMinimumBeds:
 class TestImputeBathrooms:
 
     def test_impute_bathrooms_applies_rules(self):
+        # I used bedroom counts that clearly match the rules I wanted to test
         df = pd.DataFrame({
             "bathrooms": [None, 2, None],
             "bedrooms": [1, 3, 4]
@@ -140,16 +149,16 @@ class TestImputeBathrooms:
 
         result = impute_bathrooms(df)
 
-        # For bedrooms=1 → 1 bathroom
-        # For bedrooms=4 → ceil((4/3)*2) = ceil(2.66) = 3
         assert result["bathrooms"].tolist() == [1, 2, 3]
 
 
 class TestTransformListings:
 
-    @patch("src.transform.transform_listings.setup_logger")  # Prevent file logs
+    # I patched logging so the test does not create log files
+    @patch("src.transform.transform_listings.setup_logger")
     def test_transform_listings_full_pipeline(self, mock_logger):
 
+        # I included one complete row here to check that the entire transformation pipeline works end to end
         df = pd.DataFrame({
             "id": [1],
             "property_type": ["House"],
@@ -182,10 +191,10 @@ class TestTransformListings:
 
         result = transform_listings(df)
 
-        # Pipeline should NOT drop the row
+        # I expect the row to survive since it does not exceed the missing threshold
         assert len(result) == 1
 
-        # Important engineered columns must be present
+        # I check for all engineered fields so I know the feature pipeline ran correctly
         assert "price_competitiveness (100%)" in result.columns
         assert "occupancy_potential" in result.columns
         assert "minimum_beds" in result.columns

@@ -5,28 +5,21 @@ from unittest.mock import patch
 from src.transform.transform_data import transform_data
 
 
-# ---------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------
-
+# I added this helper so I can avoid failing tests due to differences between None and NA.
 def normalize(df):
     df = df.copy().reset_index(drop=True)
-
-    # Only normalize NaN vs <NA> differences
     return df.replace({None: pd.NA})
 
-# ---------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------
 
-
+# I load the real raw listings file here so that the test uses actual source data.
 @pytest.fixture
 def sample_listings():
-    """Load a real raw Airbnb listings CSV file."""
     df = pd.read_csv("data/raw/detailed_listings_data.csv")
     return normalize(df)
 
 
+# I load the expected cleaned listings and convert the amenities column back into lists
+# because this helps compare the real output to the expected output accurately.
 @pytest.fixture
 def expected_transformed_listings():
     df = pd.read_csv("tests/test_data/expected_cleaned_listings.csv")
@@ -38,15 +31,8 @@ def expected_transformed_listings():
 
     return df
 
-# def expected_transformed_listings():
-#     """Expected result of clean_listings + transform_listings."""
-#     return pd.read_csv("tests/test_data/expected_cleaned_listings.csv")
 
-# ---------------------------------------------------------
-# Test 1 — FULL PIPELINE WORKS END-TO-END
-# ---------------------------------------------------------
-
-
+# I wrote this test so that I can confirm the full transformation pipeline works properly from start to finish.
 def test_transform_data_returns_correct_output(
     sample_listings, expected_transformed_listings
 ):
@@ -59,10 +45,7 @@ def test_transform_data_returns_correct_output(
     )
 
 
-# ---------------------------------------------------------
-# Test 2 — ERROR PROPAGATION: clean_listings
-# ---------------------------------------------------------
-
+# I added this test so that failures inside clean_listings are passed up correctly.
 @patch("src.transform.transform_data.clean_listings")
 def test_transform_data_propagates_clean_listings_exception(
     mock_clean_listings,
@@ -73,10 +56,7 @@ def test_transform_data_propagates_clean_listings_exception(
         transform_data(pd.DataFrame())
 
 
-# ---------------------------------------------------------
-# Test 3 — ERROR PROPAGATION: transform_listings
-# ---------------------------------------------------------
-
+# I created this test to make sure that errors in transform_listings are not hidden.
 @patch("src.transform.transform_data.transform_listings")
 @patch("src.transform.transform_data.clean_listings")
 def test_transform_data_propagates_transform_listings_exception(
@@ -89,10 +69,7 @@ def test_transform_data_propagates_transform_listings_exception(
         transform_data(pd.DataFrame())
 
 
-# ---------------------------------------------------------
-# Test 4 — FAIL-FAST: clean_listings fails → transform_listings NOT called
-# ---------------------------------------------------------
-
+# I wrote this test so that the function stops immediately if clean_listings fails.
 @patch("src.transform.transform_data.transform_listings")
 @patch("src.transform.transform_data.clean_listings")
 def test_transform_data_fails_fast_does_not_continue(
@@ -103,14 +80,11 @@ def test_transform_data_fails_fast_does_not_continue(
     with pytest.raises(Exception, match="Clean error"):
         transform_data(pd.DataFrame())
 
-    # Must NOT execute transform_listings
+    # I check that transform_listings was not called since the first step already failed
     mock_transform_listings.assert_not_called()
 
 
-# ---------------------------------------------------------
-# Test 5 — save_dataframe_to_csv is called
-# ---------------------------------------------------------
-
+# I added this test to make sure the final dataset is saved when everything succeeds.
 @patch("src.transform.transform_data.save_dataframe_to_csv")
 @patch("src.transform.transform_data.transform_listings")
 @patch("src.transform.transform_data.clean_listings")

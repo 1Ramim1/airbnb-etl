@@ -12,6 +12,7 @@ from src.utils.logging_utils import (
 
 
 def test_ensure_log_directory_creates_directory():
+    # I used a temporary directory here to check that the logs folder is created correctly
     with tempfile.TemporaryDirectory() as temp_dir:
         base_path = Path(temp_dir) / "test_project"
         log_dir = _ensure_log_directory(base_path)
@@ -21,6 +22,7 @@ def test_ensure_log_directory_creates_directory():
 
 
 def test_create_formatter_returns_correct_format():
+    # I call the formatter to confirm it returns a valid logging format
     formatter = _create_formatter()
 
     assert isinstance(formatter, logging.Formatter)
@@ -31,6 +33,7 @@ def test_create_formatter_returns_correct_format():
 
 
 def test_create_handlers_returns_both_handlers():
+    # I use a temporary directory so I can safely create log handlers for testing
     with tempfile.TemporaryDirectory() as temp_dir:
         log_dir = Path(temp_dir)
         file_handler, console_handler = _create_handlers(
@@ -45,6 +48,7 @@ def test_create_handlers_returns_both_handlers():
 
 @patch("src.utils.logging_utils.logging.getLogger")
 def test_setup_logger_creates_logger_with_handlers(mock_get_logger):
+    # I mock a logger here so I can check that handlers are added correctly
     mock_logger = MagicMock()
     mock_logger.handlers = []
     mock_get_logger.return_value = mock_logger
@@ -58,8 +62,9 @@ def test_setup_logger_creates_logger_with_handlers(mock_get_logger):
 
 @patch("src.utils.logging_utils.logging.getLogger")
 def test_setup_logger_skips_handlers_if_already_exist(mock_get_logger):
+    # I added a fake handler to make sure setup_logger does not duplicate handlers
     mock_logger = MagicMock()
-    mock_logger.handlers = [MagicMock()]  # Already has handlers
+    mock_logger.handlers = [MagicMock()]
     mock_get_logger.return_value = mock_logger
 
     setup_logger("test", "test.log")

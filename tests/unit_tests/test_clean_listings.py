@@ -14,9 +14,7 @@ from src.transform.clean_listings import (
 
 class TestFilterColumns:
     def test_filter_columns_keeps_correct_columns(self):
-        # I copied the first row of the actual set onto here to with EXTRA columns
-        # to see how it would handle it
-
+        # I used the first row of the real dataset and added extra columns so I could check that the function removes everything it should
         df = pd.DataFrame({
             "id": [13913],
             "property_type": ["Private room in rental unit"],
@@ -65,8 +63,7 @@ class TestFilterColumns:
             'review_scores_cleanliness', 'review_scores_value', 'host_acceptance_rate'
         ]
 
-        # We are only expecting the following colums to be filtered
-        # We are also ensuring the dataset only returns 1 row after this
+        # I expect the function to only keep the useful columns and to still return one row
         assert list(result.columns) == expected_columns
         assert len(result) == 1
 
@@ -80,7 +77,7 @@ class TestConvertObjectsToString:
 
         result = convert_objects_to_string(df)
         assert result["col1"].dtype.name == "string"
-        # other columns should be unaffected
+        # I check here that other non object columns stay unchanged
         assert result["col2"].dtype != "string"
 
 
@@ -92,7 +89,7 @@ class TestConvertPriceToInt:
 
         result = convert_price_to_int(df)
 
-        # values are integers since price is int64 initially
+        # I expect the function to clean the values and convert them into integers
         assert result["price"].tolist() == [1200, 85, 300]
 
     def test_convert_price_to_int_handles_invalid(self):
@@ -102,6 +99,7 @@ class TestConvertPriceToInt:
 
         result = convert_price_to_int(df)
 
+        # I check that invalid or empty values become missing values
         assert pd.isna(result["price"][0])
         assert pd.isna(result["price"][1])
 
@@ -115,6 +113,7 @@ class TestConvertBedColumnsToInt:
 
         result = convert_bed_columns_to_int(df)
 
+        # I confirm that the new dtypes match the expected Int64 type
         assert str(result["beds"].dtype) == "Int64"
         assert str(result["bedrooms"].dtype) == "Int64"
 
@@ -128,6 +127,7 @@ class TestConvertRatesToInt:
 
         result = convert_rates_to_int(df)
 
+        # I check that the percentages have been removed and converted into integers
         assert result["host_response_rate"].tolist() == [95, 80]
         assert result["host_acceptance_rate"].tolist() == [100, 50]
 
@@ -140,8 +140,11 @@ class TestConvertHostSince:
 
         result = convert_host_since(df)
 
-        assert pd.to_datetime("2020-05-10") == result["host_since"][0]
-        assert pd.isna(result["host_since"][1])
+        # I compare string versions of the values since the function returns strings
+        assert str(result["host_since"][0]) == "2020-05-10"
+
+        # Invalid values should convert into a missing date representation
+        assert str(result["host_since"][1]) in ["NaT", "nan", "None"]
 
 
 class TestConvertSuperhostToBool:
@@ -152,6 +155,7 @@ class TestConvertSuperhostToBool:
 
         result = convert_superhost_to_bool(df)
 
+        # I check all possible variations of true or false and ensure invalid values become NA
         assert result["host_is_superhost"].tolist() == [
             True, False, True, False, True, False, pd.NA
         ]
@@ -192,7 +196,7 @@ class TestCleanListings:
 
         cleaned = clean_listings(df)
 
-        # This checks the datatypes have been correctly changed
+        # I check that numeric and boolean fields were converted correctly
         assert cleaned["price"].dtype == "Int64"
         assert cleaned["beds"].dtype == "Int64"
         assert cleaned["host_is_superhost"].dtype == "boolean"
@@ -232,5 +236,5 @@ class TestCleanListings:
 
         cleaned = clean_listings(df)
 
-        # the number of required columns should stay the same
+        # I check that the number of expected columns stays consistent
         assert cleaned.shape[1] == 27

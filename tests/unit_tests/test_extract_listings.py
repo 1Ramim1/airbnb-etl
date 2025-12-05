@@ -22,13 +22,13 @@ def mock_read_csv(mocker):
 
 
 def test_extract_listings_execution_loads_only_csv(mocker, tmp_path):
-    # Create mock directory structure
+    # I created a fake directory here so I can check that only csv files get processed
     csv_file = tmp_path / "file1.csv"
     txt_file = tmp_path / "ignore.txt"
     csv_file.write_text("id,name\n1,Alice")
     txt_file.write_text("Not a CSV")
 
-    # Mock raw folder path
+    # I patched the folder listing so it returns my fake files
     mocker.patch(
         "src.extract.extract_listings.Path.iterdir",
         return_value=[csv_file, txt_file],
@@ -44,12 +44,13 @@ def test_extract_listings_execution_loads_only_csv(mocker, tmp_path):
 
     result = extract_listings_execution()
 
-    # Should only load the CSV file
+    # I want to confirm only the csv file was loaded
     assert list(result.keys()) == ["file1"]
     assert isinstance(result["file1"], pd.DataFrame)
 
 
 def test_extract_listings_returns_dict_of_dataframes(mocker, mock_logger):
+    # I set up a simple dataframe to make sure the return type is correct
     mock_df = pd.DataFrame({"id": [1]})
 
     mocker.patch(
@@ -63,11 +64,12 @@ def test_extract_listings_returns_dict_of_dataframes(mocker, mock_logger):
     assert list(result.keys()) == ["test_data"]
     pd.testing.assert_frame_equal(result["test_data"], mock_df)
 
-    # Logging should occur at least once
+    # I check that logging happened because extract_listings should log every run
     mock_logger.info.assert_called()
 
 
 def test_extract_listings_execution_raises_if_raw_folder_missing(mocker):
+    # I patched the folder existence check so I can test how the function reacts when the folder is missing
     mocker.patch(
         "src.extract.extract_listings.Path.exists",
         return_value=False
@@ -78,6 +80,7 @@ def test_extract_listings_execution_raises_if_raw_folder_missing(mocker):
 
 
 def test_extract_listings_execution_raises_if_no_files(mocker):
+    # Here I make the folder appear valid but empty so I can check that the function raises the correct error
     mocker.patch(
         "src.extract.extract_listings.Path.exists",
         return_value=True
@@ -93,10 +96,10 @@ def test_extract_listings_execution_raises_if_no_files(mocker):
 
 
 def test_extract_listings_execution_loads_multiple_csvs(mocker):
+    # I created two fake csv paths to simulate multiple datasets
     csv1 = Path("/fake/file1.csv")
     csv2 = Path("/fake/file2.csv")
 
-    # Simulate two CSV files
     mocker.patch(
         "src.extract.extract_listings.Path.iterdir",
         return_value=[csv1, csv2]
@@ -113,10 +116,12 @@ def test_extract_listings_execution_loads_multiple_csvs(mocker):
     result = extract_listings_execution()
 
     assert set(result.keys()) == {"file1", "file2"}
+    # I check that every result is a dataframe to confirm consistency
     assert all(isinstance(df, pd.DataFrame) for df in result.values())
 
 
 def test_extract_listings_logs_error_and_raises(mocker, mock_logger):
+    # I force extract_listings_execution to crash so I can check if extract_listings logs the error properly
     mocker.patch(
         "src.extract.extract_listings.extract_listings_execution",
         side_effect=Exception("Boom!"),
@@ -129,6 +134,7 @@ def test_extract_listings_logs_error_and_raises(mocker, mock_logger):
 
 
 def test_extract_listings_execution_read_csv_failure(mocker):
+    # I use a fake csv file and make read_csv fail so I can confirm that the error is not ignored
     csv_file = Path("/fake/file.csv")
 
     mocker.patch(

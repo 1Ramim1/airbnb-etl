@@ -16,7 +16,6 @@ cycler==0.12.1
 debugpy==1.8.17
 decorator==5.2.1
 diff_cover==9.7.2
--e git+https://github.com/1Ramim1/airbnb-etl.git@fa6105645ace71a241982b7c13843d56bb63c199#egg=ETL_Project_Walkthough
 executing==2.2.1
 flake8==7.3.0
 fonttools==4.61.0

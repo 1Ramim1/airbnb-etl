@@ -3,7 +3,7 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ETL-Project-Walkthough"
+name = "airbnb_etl_project"
 version = "0.1.0"
 description = "An ETL project for extracting, transforming, and loading data."
 authors = [{name = "Your Name", email = "ewright@digitalfutures.com"}]

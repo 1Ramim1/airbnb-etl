@@ -1,66 +1,43 @@
-- i picked the airbnb dataset. i wanted to look at it from the business perspecive
-- first i had to assess the data to see what was wrong with it or if it needed futher dirtying
-- first things first my data contains 96,000 rows and 79 columns.
-- within that these are the things i noticed about the dataset:
+# My Capstone Project
 
-  - there is heavy missing data:
+Good Afternoon, Everyone!
 
-    - some columns are missing 100% data
-      ![alt text](image.png)
-    - neighbourhood group, neighbourhood group cleansed, and license
-    - there are another 11 columns with more than 30% data missing
+It took me a long time to think about dataset, I wanted to work on. I wanted to genuinely be interested in the field. Having a massive interest in creating my own business, I wanted to look into property rentals like Airbnb. I wanted to work with the latest data, so I would be able to I'd geniunely be able to use these insights myself and be up to date. I wasn't able to find any airbnb data on kaggle so had to search around online, until i finally found a dateset on [insideairbnb.com](https://insideairbnb.com/)
 
-  - there are inconsistent data types
-  - inconsistent casing
+I selected the Airbnb dataset because I wanted to approach it from a business perspective and uncover insights that could meaningfully influence host strategy, pricing decisions, and overall platform performance. Before jumping into analysis, I began with a thorough assessment of the data to understand its structure, limitations, and how much cleaning would be required.
 
-- halfway through i realised i have way too many columns to clean to look into individually
-- i have 79 columns. so then i focused on what isnights i wanted to find
-- this helped focus on what columns are needed and which ones can be ignored
+The dataset is quite large, containing roughly 96,000 rows and 79 columns. As soon as I began exploring the columns, several issues became clear:
 
-- what insights am i interested:
-  https://chatgpt.com/s/t_692f490eba3c81918c5bc911f3e797b2
+## 1. Significant Missing Data
 
-1. Which neighborhoods generate the highest revenue?
-2. Relationship between price and occupancy (demand curve)
-3. Which property types outperform others?
-4. Host behavior & responsiveness and how it affects performance
-5. Impact of amenities on price
-6. Cleaning fees vs. total revenue
-7. What do highly rated listings have in common?
-8. Price distribution & revenue potential by size (bedrooms/beds)
-9. Heatmap of correlations across all numerical Airbnb metrics
+One of the most biggest problems with this dataset was the extent of missing data. Some columns were missing 100% of their values—such as neighbourhood group, neighbourhood group cleansed, and license.
 
-for these insights i required 28 following columns:
+![alt text](image-2.png)
 
-convert objects into string types
-convert price to int
-bed and bedrooms to int
-make host response rate, acceptance rate into int
-host since into datetime
+In addition to those, More than 14 more columns had over 30% missing values, which is substantial enough to impact analysis quality. This forced me to think carefully about which columns were actually necessary for the business insights I wanted to generate. Some examples below:
 
-![alt text](image-1.png)
-missing more than 10% of data which is a signifcant amount
-i had to find out why each column was missing their data
+![alt text](image-3.png)
 
-price and revenue columns missing:
-Listings are paused or inactive
+## 2. Inconsistent Data Types & Formatting
 
-Hosts never set price
+There were also multiple noticeable inconsistencies in:
 
-Scraping errors
+- Data types (e.g., numerical fields stored as objects)
 
-Airbnb hides prices on some pages until logged in
+- Text casing and formatting
 
-Capacity/Property Attributes (beds, bedrooms, bathrooms):
-Airbnb often leaves these blank for fixed-size listings (studio, open layout)
+- Date fields listed as strings
 
-Some hosts fill them inaccurately or skip them
+- Percentage-based metrics stored as text instead of numeric values
 
-Host Response & Acceptance Rates (missing 20–26%)
-Airbnb hides these for:
+- etc.
 
-inactive hosts
+## 3. Too Many Columns to Clean Individually
 
-new hosts
+There was also too many columns in this dataset. I intially spent the first 2 days, trying to clean and standardise all of them. but realised that it would not be possible in this time frame. So I had a plan to:
 
-hosts who disabled this info
+> "Identify the insights first, then determine which columns support those insights.""
+
+This approach allowed me to narrow the dataset down to 27 key variables, significantly streamlining the cleaning process and ensuring that all effort went toward actionable, business-focused outcomes.
+
+I will now break down my story based on the ETL pipeline.
