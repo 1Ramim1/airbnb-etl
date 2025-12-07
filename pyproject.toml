@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airbnb_etl_project"
-version = "0.1.0"
+version = "1.0.0"
 description = "An ETL project for extracting, transforming, and loading data."
-authors = [{name = "Your Name", email = "ewright@digitalfutures.com"}]
+authors = [{name = "Ramim", email = "ramim.mollah02@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [
@@ -17,7 +17,7 @@ classifiers = [
 dynamic = ["dependencies"]
 
 [project.urls]
-Homepage = "https://github.com/de-2506-a/etl-walkthrough"
+Homepage = "https://github.com/1Ramim1/airbnb-etl"
 
 [project.scripts]
 run_etl = "scripts.run_etl:main"
