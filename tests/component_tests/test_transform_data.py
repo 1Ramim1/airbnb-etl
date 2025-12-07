@@ -6,7 +6,7 @@ from src.transform.transform_data import transform_data
 
 
 # I added this helper so I can avoid failing tests due to differences between None and NA.
-def normalize(df):
+def normalise(df):
     df = df.copy().reset_index(drop=True)
     return df.replace({None: pd.NA})
 
@@ -15,7 +15,7 @@ def normalize(df):
 @pytest.fixture
 def sample_listings():
     df = pd.read_csv("data/raw/detailed_listings_data.csv")
-    return normalize(df)
+    return normalise(df)
 
 
 # I load the expected cleaned listings and convert the amenities column back into lists
@@ -39,8 +39,8 @@ def test_transform_data_returns_correct_output(
     result = transform_data(sample_listings)
 
     pd.testing.assert_frame_equal(
-        normalize(result),
-        normalize(expected_transformed_listings),
+        normalise(result),
+        normalise(expected_transformed_listings),
         check_dtype=False,
     )
 

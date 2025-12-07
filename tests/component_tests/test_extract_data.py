@@ -10,7 +10,7 @@ from src.extract.extract import extract_data
 
 
 # I added this helper to make sure None and NaN do not cause false failures in comparisons.
-def normalize_nulls(df):
+def normalise_nulls(df):
     return df.fillna(pd.NA).replace({pd.NA: None})
 
 
@@ -30,8 +30,8 @@ def test_extract_data_returns_correct_data(mock_extract_listings):
     assert isinstance(result["listings"], pd.DataFrame)
 
     pd.testing.assert_frame_equal(
-        normalize_nulls(result["listings"]),
-        normalize_nulls(mock_df),
+        normalise_nulls(result["listings"]),
+        normalise_nulls(mock_df),
         check_dtype=False
     )
 

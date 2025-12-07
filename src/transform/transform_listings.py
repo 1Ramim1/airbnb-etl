@@ -122,7 +122,7 @@ def add_occupancy_potential(df):
         0.10 * min_night_penalty
     )
 
-    # Normalize 0–1
+    # Normalise 0–1
     score = score / score.max()
 
     # Only add the final score column
