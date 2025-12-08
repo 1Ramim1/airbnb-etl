@@ -163,3 +163,4 @@ config/config.yaml
 notebooks/gitignore/*
 
 *.csv
+*.ipynb
